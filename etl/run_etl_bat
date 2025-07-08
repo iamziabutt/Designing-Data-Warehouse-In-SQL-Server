@@ -1,0 +1,33 @@
+@echo off
+setlocal
+
+:: Configuration
+set PYTHON_SCRIPT="D:\Zia\data-engineering\Projects\Designing Data Warehouse In SQL Server\etl\extract_weather.py"
+set SQL_SCRIPT="D:\Zia\data-engineering\Projects\Designing Data Warehouse In SQL Server\etl\transform_load.sql"
+set LOG_FILE="D:\Zia\data-engineering\Projects\Designing Data Warehouse In SQL Server\logs\etl_%date:~-4,4%%date:~-7,2%%date:~-10,2%.log"
+
+:: Step 1: Run Python Extraction
+echo [%time%] Starting ETL process >> %LOG_FILE%
+python %PYTHON_SCRIPT% >> %LOG_FILE% 2>&1
+
+if %errorlevel% neq 0 (
+    echo [%time%] ERROR: Python extraction failed >> %LOG_FILE%
+    powershell -Command "Send-MailMessage -From 'iamziabutt@gmail.com' -To 'zia.ullah@hotmail.co.uk' -Subject 'ETL FAILED: Extraction Error' -Body 'Check %LOG_FILE%' -SmtpServer 'smtp.yourmailserver.com'"
+    exit /b 1
+)
+
+:: Step 2: Run SQL Transformation
+echo [%time%] Starting SQL transformation >> %LOG_FILE%
+sqlcmd -S localhost -d WeatherDataWarehouse -i %SQL_SCRIPT% -o %LOG_FILE% -a -b
+
+if %errorlevel% neq 0 (
+    echo [%time%] ERROR: SQL transformation failed >> %LOG_FILE%
+    powershell -Command "Send-MailMessage -From 'iamziabutt@gmail.com' -To 'zia.ullah@hotmail.co.uk' -Subject 'ETL FAILED: Transformation Error' -Body 'Check %LOG_FILE%' -SmtpServer 'smtp.yourmailserver.com'"
+    exit /b 1
+)
+
+:: Step 3: Success Notification
+echo [%time%] ETL completed successfully >> %LOG_FILE%
+powershell -Command "Send-MailMessage -From 'iamziabutt@gmail.com' -To 'zia.ullah@hotmail.co.uk' -Subject 'ETL SUCCEEDED' -Body 'Weather data updated' -SmtpServer 'smtp.yourmailserver.com'"
+
+endlocal
