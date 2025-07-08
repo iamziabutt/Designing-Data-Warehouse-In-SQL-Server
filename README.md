@@ -2,6 +2,7 @@
 
 We are going to design a data warehouse in sql server for historical weather data for multiple cities.
 
+---
 ### 🌿Solution Archecture:
 
 - **Extract:** Python script (requests) → Staging tables
@@ -14,7 +15,7 @@ We are going to design a data warehouse in sql server for historical weather dat
 
 - **Monitoring:** Database Mail alerts
 
-
+---
 ### 🌿Project Structure:
 ```text
 text
@@ -29,7 +30,7 @@ D:\Designing data warehouse in sql server\
 ├── data_extraction.ipynb 
 └── README.md
 ```
-
+---
 ### 🌿Plan:
 
 1. **Extraction (Python module)**
@@ -60,6 +61,7 @@ D:\Designing data warehouse in sql server\
 
 7. **Production**: Schedule with Windows Task Scheduler, set up Database Mail for alerts
 
+---
 ### 🌿Step By Step Implementation:
 
 
